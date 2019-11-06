@@ -1,0 +1,33 @@
+{
+  "name": "Versionify",
+  "version": "1.0.0",
+  "description": "A Shopify application to version resources",
+  "scripts": {
+    "start": "sls offline start --enforceSecureCookies --watch",
+    "lint": "eslint .",
+    "test": "DEBUG=true nyc sls invoke test",
+    "verify": "npm run lint && npm test",
+    "package": "serverless package -s",
+    "deploy": "serverless deploy -s"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@shopify/koa-shopify-auth": "^3.1.48",
+    "koa": "^2.11.0",
+    "koa-session": "^5.12.3",
+    "next": "^9.1.2",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "serverless-finch": "^2.4.3",
+    "serverless-http": "^2.3.0",
+    "shopify-api-node": "^2.24.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.564.0",
+    "serverless-localtunnel": "0.0.16",
+    "serverless-offline": "^5.12.0",
+    "serverless-offline-lambda": "^1.0.6"
+  }
+}

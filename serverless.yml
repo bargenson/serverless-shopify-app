@@ -1,0 +1,56 @@
+service: versionify
+
+app: versionify
+org: bargenson
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: ${opt:stage, 'local'}
+  environment: ${file(./env.yml):${self:provider.stage}}
+
+functions:
+  auth:
+    handler: server/functions/auth.handler
+    events:
+      - http:
+          path: /auth
+          method: GET
+
+  auth-callback:
+    handler: server/functions/auth-callback.handler
+    events:
+      - http:
+          path: /auth/callback
+          method: GET
+
+  on-product-update:
+    handler: server/functions/on-product-update.handler
+    events:
+      - http:
+          path: /webhooks/product/create
+          method: POST
+      - http:
+          path: /webhooks/product/update
+          method: POST
+
+  install-webhooks:
+    handler: server/functions/install-webhooks.handler
+
+plugins:
+  - serverless-finch
+  - serverless-offline-lambda
+  - serverless-offline
+  - serverless-localtunnel
+
+custom:
+  serverless-offline:
+    port: 8080
+  client:
+    bucketName: versionify-client
+  localtunnel:
+    subdomain: versionify
+    port: 8080
+  lambda:
+    host: 0.0.0.0
+    port: 4000
