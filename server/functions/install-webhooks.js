@@ -19,7 +19,7 @@ function getWebhookMutationQuery() {
   `
 }
 
-module.exports.handler = async (event, context, callback) => {
+module.exports.handler = async (event, context) => {
   const shopify = new Shopify({
     shopName: event.shop,
     accessToken: event.accessToken,
@@ -50,5 +50,4 @@ module.exports.handler = async (event, context, callback) => {
   if (errors) {
     throw `Error while creating webhooks: ${JSON.stringify(errors)}`;
   }
-  callback();
 };

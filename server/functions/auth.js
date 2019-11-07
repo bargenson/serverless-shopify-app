@@ -6,7 +6,7 @@ const { host, pathPrefix, shopify } = require('../config');
 
 const createNonce = nonce();
 
-module.exports.handler = async (event, context, callback) => {
+module.exports.handler = async (event, context) => {
   const { myShopifyDomain, scopes, apiKey, accessMode } = shopify;
   const { shop } = event.queryStringParameters || {};
 
@@ -16,12 +16,12 @@ module.exports.handler = async (event, context, callback) => {
   );
 
   if (shop == null || !shopRegex.test(shop)) {
-    callback(null, {
+    return {
       statusCode: 400,
       body: JSON.stringify({
         error: 'Shop param is missing or invalid',
       }),
-    });
+    };
   }
 
   const requestNonce = createNonce();
@@ -39,11 +39,11 @@ module.exports.handler = async (event, context, callback) => {
 
   const formattedQueryString = querystring.stringify(redirectParams);
 
-  callback(null, {
+  return {
     statusCode: 301,
     headers: {
       Location: `https://${shop}/admin/oauth/authorize?${formattedQueryString}`,
       'Set-Cookie': `nonce=${requestNonce}`,
     }
-  });
+  };
 };
