@@ -42,6 +42,7 @@ plugins:
   - serverless-offline-lambda
   - serverless-offline
   - serverless-localtunnel
+  # - serverless-nextjs-plugin
 
 custom:
   serverless-offline:
@@ -54,3 +55,6 @@ custom:
   lambda:
     host: 0.0.0.0
     port: 4000
+  serverless-nextjs:
+    nextConfigDir: ./client
+

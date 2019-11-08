@@ -4,10 +4,11 @@ const querystring = require('querystring');
 const nonce = require('nonce');
 const safeCompare = require('safe-compare');
 const crypto = require('crypto');
+const fetch = require('node-fetch');
 const { host, pathPrefix, shopify } = require('../config');
 
 function getCookie(event, name) {
-  const cookie = event.headers.cookie || '';
+  const cookie = event.headers.Cookie || '';
   const match = cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
   if (match) return match[2];
 }
@@ -32,18 +33,18 @@ function validateHmac(hmac, secret, query) {
 }
 
 function validateNonce(event) {
-  const query = event.queryStringParameters || {}
-  const { state: nonce } = query;
+  const { state: nonce } = event.queryStringParameters || {};
   return nonce && getCookie(event, 'nonce') === nonce;
 }
 
 function validateShop(event) {
-  const query = event.queryStringParameters || {}
-  const { shop } = query;
+  const { shop } = event.queryStringParameters || {};
   return !!shop;
 }
 
 module.exports.handler = async (event, context) => {
+  console.log('Event:', event);
+
   const query = event.queryStringParameters || {}
   const { shop, hmac, code } = query;
   const { apiKey, secret } = shopify;

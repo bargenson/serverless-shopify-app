@@ -20,6 +20,8 @@ function getWebhookMutationQuery() {
 }
 
 module.exports.handler = async (event, context) => {
+  console.log('Event:', event);
+
   const shopify = new Shopify({
     shopName: event.shop,
     accessToken: event.accessToken,

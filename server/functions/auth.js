@@ -7,6 +7,8 @@ const { host, pathPrefix, shopify } = require('../config');
 const createNonce = nonce();
 
 module.exports.handler = async (event, context) => {
+  console.log('Event:', event);
+
   const { myShopifyDomain, scopes, apiKey, accessMode } = shopify;
   const { shop } = event.queryStringParameters || {};
 
