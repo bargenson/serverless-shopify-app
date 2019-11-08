@@ -1,11 +1,14 @@
 'use strict';
 
+const AWS = require('aws-sdk');
 const querystring = require('querystring');
 const nonce = require('nonce');
 const safeCompare = require('safe-compare');
 const crypto = require('crypto');
 const fetch = require('node-fetch');
-const { host, pathPrefix, shopify, clientHost } = require('../config');
+const { host, pathPrefix, shopify, clientHost, aws } = require('../config');
+
+const lambda = new AWS.Lambda(aws.lambda);
 
 function getCookie(event, name) {
   const cookie = event.headers.cookie || event.headers.Cookie || '';
@@ -40,6 +43,14 @@ function validateNonce(event) {
 function validateShop(event) {
   const { shop } = event.queryStringParameters || {};
   return !!shop;
+}
+
+function installWebhooks(shop, accessToken) {
+  return lambda.invoke({
+    FunctionName: 'install-webhooks',
+    InvocationType: 'EVENT',
+    Payload: JSON.stringify({ shop, accessToken }),
+  }).promise();
 }
 
 module.exports.handler = async (event, context) => {
@@ -105,6 +116,8 @@ module.exports.handler = async (event, context) => {
 
   const accessTokenData = await accessTokenResponse.json();
   const { access_token: accessToken } = accessTokenData;
+
+  await installWebhooks(shop, accessToken);
 
   const cookieValue = JSON.stringify({ accessToken, shop });
 

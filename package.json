@@ -7,9 +7,10 @@
     "lint": "eslint .",
     "test": "DEBUG=true nyc sls invoke test",
     "verify": "npm run lint && npm test",
-    "package": "serverless package -s",
-    "deploy-server": "serverless deploy -s",
-    "deploy-client": "npm run build --prefix ./client && serverless client deploy -s"
+    "package": "sls package -s",
+    "postinstall": "sls dynamodb install",
+    "deploy-server": "sls deploy -s",
+    "deploy-client": "npm run build --prefix ./client && sls client deploy -s"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +19,13 @@
     "node-fetch": "^2.6.0",
     "nonce": "^1.0.4",
     "safe-compare": "^1.1.4",
+    "serverless-dynamodb-local": "^0.2.38",
     "shopify-api-node": "^2.24.0",
     "universal-cookie": "^4.0.2"
   },
   "devDependencies": {
     "aws-sdk": "^2.564.0",
+    "serverless": "^1.57.0",
     "serverless-finch": "^2.4.3",
     "serverless-http": "^2.3.0",
     "serverless-localtunnel": "0.0.16",

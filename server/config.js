@@ -20,6 +20,10 @@ const config = {
       endpoint: process.env.AWS_LAMBDA_ENDPOINT,
       region: 'us-east-1',
     },
+    dynamodb: {
+      region: 'localhost',
+      endpoint: 'http://localhost:8000',
+    },
   },
 };
 

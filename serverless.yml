@@ -45,8 +45,23 @@ functions:
           method: GET
           cors: true
 
+  products:
+    handler: server/functions/products.handler
+    events:
+      - http:
+          path: /products
+          method: GET
+
+  product-versions:
+    handler: server/functions/product-versions.handler
+    events:
+      - http:
+          path: /products/{productId}/versions
+          method: GET
+
 plugins:
   - serverless-finch
+  - serverless-dynamodb-local
   - serverless-offline-lambda
   - serverless-offline
   - serverless-localtunnel
@@ -66,3 +81,30 @@ custom:
   lambda:
     host: 0.0.0.0
     port: 4000
+
+  dynamodb:
+    stages:
+      - local
+    start:
+      migrate: true
+      port: 8000
+
+resources:
+  Resources:
+    productVersions:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: productVersions
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: updated_at
+            KeyType: RANGE
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: 'N'
+          - AttributeName: updated_at
+            AttributeType: 'S'        
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
