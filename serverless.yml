@@ -24,6 +24,9 @@ functions:
           path: /auth/callback
           method: GET
 
+  install-webhooks:
+    handler: server/functions/install-webhooks.handler
+
   on-product-update:
     handler: server/functions/on-product-update.handler
     events:
@@ -34,8 +37,13 @@ functions:
           path: /webhooks/product/update
           method: POST
 
-  install-webhooks:
-    handler: server/functions/install-webhooks.handler
+  shopify-cookie:
+    handler: server/functions/shopify-cookie.handler
+    events:
+      - http:
+          path: /shopify
+          method: GET
+          cors: true
 
 plugins:
   - serverless-finch

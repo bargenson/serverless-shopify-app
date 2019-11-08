@@ -16,6 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "node-fetch": "^2.6.0",
+    "nonce": "^1.0.4",
+    "safe-compare": "^1.1.4",
     "shopify-api-node": "^2.24.0",
     "universal-cookie": "^4.0.2"
   },

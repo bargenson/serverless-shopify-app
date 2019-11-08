@@ -1,5 +1,6 @@
 const config = {
   host: process.env.HOST,
+  clientHost: process.env.CLIENT_HOST,
   pathPrefix: process.env.PATH_PREFIX,
   shopify: {
     apiKey: process.env.SHOPIFY_API_KEY,

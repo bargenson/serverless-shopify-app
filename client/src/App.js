@@ -1,39 +1,61 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppProvider } from '@shopify/polaris';
 import { Provider } from '@shopify/app-bridge-react';
-import Cookies from 'js-cookie';
 import translations from '@shopify/polaris/locales/en.json';
 import '@shopify/polaris/styles.css';
 
 function getShopifyCookie() {
-  const base64 = Cookies.get('shopify');
-  if (base64) {
-    return JSON.parse(atob(base64));
-  }
-  return {};
+  return fetch('https://versionify.localtunnel.me/shopify', { credentials: 'include' })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(`${response.status}`);
+    });
 }
 
 function App() {
-  const shopifyCookie = getShopifyCookie();
-  console.log(shopifyCookie);
+  const [shopifyCookie, setShopifyCookie] = useState();
 
-  const config = {
-    apiKey: 'API_KEY',
-    shopOrigin: shopifyCookie.shop,
-    forceRedirect: false,
-  };
-  return (
-    <React.Fragment>
-      <Provider config={config}>
-        <AppProvider i18n={translations}>
-          <h1>Hello</h1>
-          <p>
-            Cookies: {JSON.stringify(Cookies.get())}
-          </p>
-        </AppProvider>
-      </Provider>
-    </React.Fragment>
-  );
+  if (shopifyCookie) {
+    if (shopifyCookie.shop) {
+      const config = {
+        apiKey: 'd105ad6ba3544e9eb78f2d07c115dd45',
+        shopOrigin: shopifyCookie.shop,
+        forceRedirect: false,
+      };
+
+      return (
+        <React.Fragment>
+          <Provider config={config}>
+            <AppProvider i18n={translations}>
+              <p>Cookie: {JSON.stringify(shopifyCookie)}</p>
+            </AppProvider>
+          </Provider>
+        </React.Fragment>
+      );
+    } else {
+      return (
+        <React.Fragment>
+          Please connect first.
+        </React.Fragment>
+      );
+    }
+  } else {
+    getShopifyCookie()
+      .then((shopifyCookie) => {
+        setShopifyCookie(shopifyCookie);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    return (
+      <React.Fragment>
+        Loading...
+      </React.Fragment>
+    );
+  }
 }
 
 export default App;

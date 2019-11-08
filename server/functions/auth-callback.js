@@ -5,10 +5,10 @@ const nonce = require('nonce');
 const safeCompare = require('safe-compare');
 const crypto = require('crypto');
 const fetch = require('node-fetch');
-const { host, pathPrefix, shopify } = require('../config');
+const { host, pathPrefix, shopify, clientHost } = require('../config');
 
 function getCookie(event, name) {
-  const cookie = event.headers.Cookie || '';
+  const cookie = event.headers.cookie || event.headers.Cookie || '';
   const match = cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
   if (match) return match[2];
 }
@@ -109,8 +109,9 @@ module.exports.handler = async (event, context) => {
   const cookieValue = JSON.stringify({ accessToken, shop });
 
   return {
-    statusCode: 200,
+    statusCode: 303,
     headers: {
+      'Location': clientHost,
       'Set-Cookie': `shopify=${Buffer.from(cookieValue).toString('base64')};path=/`,
     },
   };
