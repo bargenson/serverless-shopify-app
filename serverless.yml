@@ -42,19 +42,19 @@ plugins:
   - serverless-offline-lambda
   - serverless-offline
   - serverless-localtunnel
-  # - serverless-nextjs-plugin
 
 custom:
   serverless-offline:
     port: 8080
+
   client:
-    bucketName: versionify-client
+    bucketName: versionify-client-${self:provider.stage}
+    distributionFolder: client/build
+
   localtunnel:
     subdomain: versionify
     port: 8080
+
   lambda:
     host: 0.0.0.0
     port: 4000
-  serverless-nextjs:
-    nextConfigDir: ./client
-
