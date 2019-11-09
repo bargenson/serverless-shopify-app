@@ -3,6 +3,7 @@ import { AppProvider } from '@shopify/polaris';
 import { Provider } from '@shopify/app-bridge-react';
 import translations from '@shopify/polaris/locales/en.json';
 import '@shopify/polaris/styles.css';
+import Products from './containers/products';
 
 function getShopifyCookie() {
   return fetch('https://versionify.localtunnel.me/shopify', { credentials: 'include' })
@@ -29,7 +30,7 @@ function App() {
         <React.Fragment>
           <Provider config={config}>
             <AppProvider i18n={translations}>
-              <p>Cookie: {JSON.stringify(shopifyCookie)}</p>
+              <Products />
             </AppProvider>
           </Provider>
         </React.Fragment>

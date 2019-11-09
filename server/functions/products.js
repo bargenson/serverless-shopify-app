@@ -10,6 +10,13 @@ function getProductsQuery() {
           node {
             id
             title
+            images(first: 1) {
+              edges {
+                node {
+                  src
+                }
+              }
+            }
           }
         }
       }
