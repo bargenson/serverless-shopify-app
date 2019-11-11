@@ -89,7 +89,7 @@ custom:
     distributionFolder: client/build
 
   localtunnel:
-    subdomain: lazy-stingray-80
+    subdomain: versionify
     port: 8080
 
   lambda:
