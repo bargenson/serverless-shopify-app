@@ -14,10 +14,10 @@ function getWebhooksByCallbackUrlQuery(callbackUrl) {
         }
       }
     }
-  `
+  `;
 }
 
-function getWebhookMutationQuery() {
+function getWebhookCreateMutation() {
   return `
     mutation WebhookSubscriptionCreate($topic: WebhookSubscriptionTopic!, $webhookSubscription: WebhookSubscriptionInput!) {
       webhookSubscriptionCreate(topic: $topic, webhookSubscription: $webhookSubscription) {
@@ -30,11 +30,11 @@ function getWebhookMutationQuery() {
         }
       }
     }
-  `
+  `;
 }
 
 function createWebhook(shopify, topic, callbackUrl) {
-  return shopify.graphql(getWebhookMutationQuery(), {
+  return shopify.graphql(getWebhookCreateMutation(), {
     topic,
     webhookSubscription: {
       callbackUrl,

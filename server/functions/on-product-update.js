@@ -17,11 +17,12 @@ function clean(obj) {
 module.exports.handler = async (event, context) => {
   console.log(event);
 
+  const shop = event.headers['x-shopify-shop-domain'];
   const product = JSON.parse(event.body);
 
   const params = {
-    TableName: 'productVersions',
-    Item: clean(product),
+    TableName: 'ProductVersions',
+    Item: Object.assign({}, clean(product), { shop }),
   };
 
   await documentClient.put(params).promise();

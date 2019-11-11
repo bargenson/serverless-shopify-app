@@ -37,8 +37,8 @@ functions:
           path: /webhooks/product/update
           method: POST
 
-  shopify-cookie:
-    handler: server/functions/shopify-cookie.handler
+  shopify-auth:
+    handler: server/functions/shopify-auth.handler
     events:
       - http:
           path: /shopify
@@ -59,6 +59,20 @@ functions:
           path: /products/{productId}/versions
           method: GET
 
+  product-version:
+    handler: server/functions/product-version.handler
+    events:
+      - http:
+          path: /products/{productId}/versions/{productVersionDate}
+          method: GET
+
+  restore-product-version:
+    handler: server/functions/restore-product-version.handler
+    events:
+      - http:
+          path: /products/{productId}/versions/{productVersionDate}/restore
+          method: GET
+
 plugins:
   - serverless-finch
   - serverless-dynamodb-local
@@ -75,7 +89,7 @@ custom:
     distributionFolder: client/build
 
   localtunnel:
-    subdomain: versionify
+    subdomain: lazy-stingray-80
     port: 8080
 
   lambda:
@@ -94,7 +108,7 @@ resources:
     productVersions:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: productVersions
+        TableName: ProductVersions
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -102,9 +116,23 @@ resources:
             KeyType: RANGE
         AttributeDefinitions:
           - AttributeName: id
-            AttributeType: 'N'
+            AttributeType: N
           - AttributeName: updated_at
-            AttributeType: 'S'        
+            AttributeType: S
+          - AttributeName: shop
+            AttributeType: S
+        GlobalSecondaryIndexes:
+          - IndexName: ShopIndex
+            KeySchema:
+              - AttributeName: shop
+                KeyType: HASH
+              - AttributeName: id
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

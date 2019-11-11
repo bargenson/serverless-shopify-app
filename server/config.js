@@ -25,6 +25,10 @@ const config = {
       endpoint: 'http://localhost:8000',
     },
   },
+  encryption: {
+    secret: '4B50LUIFLIuzQubvLjKwgETO9uLq570mrY@m3X7DjOR5ukwTP8TZqhPFADpTOYdlkpmZc0',
+    algorithm: 'aes-256-cbc',
+  },
 };
 
 console.log('Config:', config);

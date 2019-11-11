@@ -1,12 +1,13 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const Crypto = require('crypto');
 const querystring = require('querystring');
 const nonce = require('nonce');
 const safeCompare = require('safe-compare');
 const crypto = require('crypto');
 const fetch = require('node-fetch');
-const { host, pathPrefix, shopify, clientHost, aws } = require('../config');
+const { host, pathPrefix, shopify, clientHost, aws, encryption } = require('../config');
 
 const lambda = new AWS.Lambda(aws.lambda);
 
@@ -53,6 +54,16 @@ function installWebhooks(shop, accessToken) {
   }).promise();
 }
 
+function createCookie(value) {
+  try {
+    const cipher = Crypto.createCipher(encryption.algorithm, encryption.secret);
+    const encrypted = cipher.update(JSON.stringify(value), 'utf8', 'base64') + cipher.final('base64');
+    return `shopify=${encrypted};path=/`;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+}
+
 module.exports.handler = async (event, context) => {
   console.log('Event:', event);
 
@@ -64,7 +75,7 @@ module.exports.handler = async (event, context) => {
     return {
       statusCode: 403,
       body: JSON.stringify({
-        error: 'Invalid nonce',
+        message: 'Invalid nonce',
       }),
     };
   }
@@ -73,7 +84,7 @@ module.exports.handler = async (event, context) => {
     return {
       statusCode: 403,
       body: JSON.stringify({
-        error: 'Shop is missing',
+        message: 'Shop is missing',
       }),
     };
   }
@@ -82,7 +93,7 @@ module.exports.handler = async (event, context) => {
     return {
       statusCode: 400,
       body: JSON.stringify({
-        error: 'Invalid hmac',
+        message: 'Invalid hmac',
       }),
     };
   }
@@ -109,7 +120,7 @@ module.exports.handler = async (event, context) => {
     return {
       statusCode: 401,
       body: JSON.stringify({
-        error: 'Access token fetch failure',
+        message: 'Access token fetch failure',
       }),
     };
   }
@@ -119,13 +130,11 @@ module.exports.handler = async (event, context) => {
 
   await installWebhooks(shop, accessToken);
 
-  const cookieValue = JSON.stringify({ accessToken, shop });
-
   return {
     statusCode: 303,
     headers: {
       'Location': clientHost,
-      'Set-Cookie': `shopify=${Buffer.from(cookieValue).toString('base64')};path=/`,
+      'Set-Cookie': createCookie({ accessToken, shop }),
     },
   };
 };

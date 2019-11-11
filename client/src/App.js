@@ -1,59 +1,81 @@
-import React, { useState } from 'react';
-import { AppProvider } from '@shopify/polaris';
+import React, { useState, useEffect } from 'react';
+import { Frame, Loading, Banner } from '@shopify/polaris';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 import { Provider } from '@shopify/app-bridge-react';
-import translations from '@shopify/polaris/locales/en.json';
 import '@shopify/polaris/styles.css';
-import Products from './containers/products';
-
-function getShopifyCookie() {
-  return fetch('https://versionify.localtunnel.me/shopify', { credentials: 'include' })
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error(`${response.status}`);
-    });
-}
+import { Products, ProductVersions, ProductVersion } from './pages';
+import { getShopifyAuth } from './clients/backend';
 
 function App() {
-  const [shopifyCookie, setShopifyCookie] = useState();
+  const [shopifyAuth, setShopifyAuth] = useState();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  if (shopifyCookie) {
-    if (shopifyCookie.shop) {
-      const config = {
-        apiKey: 'd105ad6ba3544e9eb78f2d07c115dd45',
-        shopOrigin: shopifyCookie.shop,
-        forceRedirect: false,
-      };
+  useEffect(() => {
+    setError(false);
+    setLoading(true);
+    (async () => {
+      try {
+        setShopifyAuth(await getShopifyAuth());
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
-      return (
-        <React.Fragment>
-          <Provider config={config}>
-            <AppProvider i18n={translations}>
-              <Products />
-            </AppProvider>
-          </Provider>
-        </React.Fragment>
-      );
-    } else {
-      return (
-        <React.Fragment>
-          Please connect first.
-        </React.Fragment>
-      );
-    }
+  if (loading) {
+    return (
+      <Frame>
+        <Loading />
+      </Frame>
+    );
+  } else if (error) {
+    return (
+      <Banner
+        title='Error while reaching server'
+        status='critical'
+      >
+        <p>
+          Please try refreshing the page in a few moment.
+        </p>
+        <p>
+          Details: {error}
+        </p>
+      </Banner>
+    );
   } else {
-    getShopifyCookie()
-      .then((shopifyCookie) => {
-        setShopifyCookie(shopifyCookie);
-      })
-      .catch((err) => {
-        alert(err);
-      });
-
+    const config = {
+      apiKey: 'd105ad6ba3544e9eb78f2d07c115dd45',
+      shopOrigin: shopifyAuth.shop,
+      forceRedirect: false,
+    };
     return (
       <React.Fragment>
-        Loading...
+        <Provider config={config}>
+          <Router>
+            <Switch>
+              <Route exact path="/">
+                <Redirect to="/products" />
+              </Route>
+              <Route exact path='/products'>
+                <Products />
+              </Route>
+              <Route exact path='/products/:productId/versions'>
+                <ProductVersions />
+              </Route>
+              <Route exact path='/products/:productId/versions/:productVersionDate'>
+                <ProductVersion />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
       </React.Fragment>
     );
   }
