@@ -18,7 +18,7 @@ function getShopifyCookie(event) {
 }
 
 module.exports.handler = async (event, context) => {
-  console.log(event);
+  console.log('Event', event);
 
   const { productId } = event.pathParameters;
 
@@ -26,11 +26,9 @@ module.exports.handler = async (event, context) => {
     return withAuthentication(event, async ({ shop, accessToken }) => {
       const params = {
         TableName: 'ProductVersions',
-        IndexName: 'ShopIndex',
-        KeyConditionExpression: 'id = :productId AND shop = :shop',
+        KeyConditionExpression: 'id = :productId',
         ExpressionAttributeValues: {
           ':productId': parseInt(productId),
-          ':shop': shop,
         },
       };
       const { Items: productVersions } = await documentClient.query(params).promise();

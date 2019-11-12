@@ -1,7 +1,9 @@
 const config = {
+  serviceName: process.env.SERVICE_NAME,
+  environment: process.env.ENVIRONMENT,
+  offline: process.env.OFFLINE,
   host: process.env.HOST,
   clientHost: process.env.CLIENT_HOST,
-  pathPrefix: process.env.PATH_PREFIX,
   shopify: {
     apiKey: process.env.SHOPIFY_API_KEY,
     secret: process.env.SHOPIFY_SECRET,
@@ -18,15 +20,13 @@ const config = {
     lambda: {
       apiVersion: '2015-03-31',
       endpoint: process.env.AWS_LAMBDA_ENDPOINT,
-      region: 'us-east-1',
     },
     dynamodb: {
-      region: 'localhost',
-      endpoint: 'http://localhost:8000',
+      endpoint: process.env.AWS_DYNAMODB_ENDPOINT,
     },
   },
   encryption: {
-    secret: '4B50LUIFLIuzQubvLjKwgETO9uLq570mrY@m3X7DjOR5ukwTP8TZqhPFADpTOYdlkpmZc0',
+    secret: process.env.ENCRYPTION_SECRET,
     algorithm: 'aes-256-cbc',
   },
 };

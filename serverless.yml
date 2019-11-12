@@ -1,13 +1,26 @@
-service: versionify
-
-app: versionify
 org: bargenson
+app: versionify
+service: versionify
 
 provider:
   name: aws
   runtime: nodejs10.x
   stage: ${opt:stage, 'local'}
   environment: ${file(./env.yml):${self:provider.stage}}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource: arn:aws:lambda:*:*:function:${self:service}-${self:provider.stage}-*
+    - Effect: "Allow"
+      Action:
+       - dynamodb:Query
+       - dynamodb:Scan
+       - dynamodb:GetItem
+       - dynamodb:PutItem
+       - dynamodb:UpdateItem
+      Resource: arn:aws:dynamodb:*:*:table/ProductVersions*
 
 functions:
   auth:
@@ -87,6 +100,8 @@ custom:
   client:
     bucketName: versionify-client-${self:provider.stage}
     distributionFolder: client/build
+    indexDocument: index.html
+    errorDocument: index.html
 
   localtunnel:
     subdomain: versionify

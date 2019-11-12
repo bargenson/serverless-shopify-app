@@ -1,3 +1,3 @@
-export { default as Products } from './products';
-export { default as ProductVersions } from './productVersions';
-export { default as ProductVersion } from './productVersion';
+export { default as Products } from './Products';
+export { default as ProductVersions } from './ProductVersions';
+export { default as ProductVersion } from './ProductVersion';

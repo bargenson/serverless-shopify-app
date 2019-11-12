@@ -15,7 +15,7 @@ function clean(obj) {
 }
 
 module.exports.handler = async (event, context) => {
-  console.log(event);
+  console.log('Event', event);
 
   const shop = event.headers['x-shopify-shop-domain'];
   const product = JSON.parse(event.body);

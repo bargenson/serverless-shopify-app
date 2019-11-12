@@ -23,7 +23,7 @@ function App() {
       try {
         setShopifyAuth(await getShopifyAuth());
       } catch (err) {
-        setError(err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }

@@ -15,31 +15,39 @@ function getShopifyAuth(cookie) {
       throw new Error(err.message);
     }
   }
-  return {};
+  return undefined;
+}
+
+function unauthorized(httpTriggered) {
+  if (httpTriggered) {
+    const errorMessage = 'No Shopify cookie';
+    return {
+      statusCode: 401,
+      headers: {
+        'Access-Control-Allow-Origin': clientHost,
+        'Access-Control-Allow-Credentials': true,
+      },
+      body: JSON.stringify({ message: errorMessage }),
+    };
+  }
+  throw new Error(errorMessage);
 }
 
 module.exports.handler = async (event, context) => {
-  console.log('Event:', event);
+  console.log('Event', event);
 
   const httpTriggered = !!event.httpMethod;
   const cookie = httpTriggered ? (event.headers.cookie || event.headers.Cookie) : event.cookie;
 
   if (!cookie) {
-    if (httpTriggered) {
-      const errorMessage = 'No Shopify cookie';
-      return {
-        statusCode: 401,
-        headers: {
-          'Access-Control-Allow-Origin': clientHost,
-          'Access-Control-Allow-Credentials': true,
-        },
-        body: JSON.stringify({ message: errorMessage }),
-      };
-    }
-    throw new Error(errorMessage);
+    return unauthorized(httpTriggered);
   }
 
   const shopifyAuth = getShopifyAuth(cookie);
+
+  if (!shopifyAuth) {
+    return unauthorized(httpTriggered);
+  }
 
   if (httpTriggered) {
     return {

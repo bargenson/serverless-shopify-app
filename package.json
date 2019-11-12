@@ -7,10 +7,11 @@
     "lint": "eslint .",
     "test": "DEBUG=true nyc sls invoke test",
     "verify": "npm run lint && npm test",
-    "package": "sls package -s",
     "postinstall": "sls dynamodb install",
-    "deploy-server": "sls deploy -s",
-    "deploy-client": "npm run build --prefix ./client && sls client deploy -s"
+    "deploy-server:dev": "sls deploy -s dev",
+    "deploy-client:dev": "npm run build:dev --prefix ./client && sls client deploy -s dev",
+    "deploy-server:prod": "sls deploy -s prod",
+    "deploy-client:prod": "npm run build:prod --prefix ./client && sls client deploy -s prod"
   },
   "keywords": [],
   "author": "",

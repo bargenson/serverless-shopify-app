@@ -16,7 +16,7 @@ function Products() {
       try {
         setProducts(await getProducts());
       } catch (err) {
-        setError(err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -51,7 +51,8 @@ function Products() {
         />,
         <Link url={`/products/${product.id}/versions`}>
           {product.title}
-        </Link>
+        </Link>,
+        new Date(product.updatedAt).toLocaleString(),
       ];
     });
     return (
@@ -61,7 +62,7 @@ function Products() {
             columnContentTypes={[
               'text',
             ]}
-            headings={['', 'Product']}
+            headings={['', 'Name', 'Last update']}
             rows={rows}
           />
         </Card>

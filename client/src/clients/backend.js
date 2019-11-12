@@ -1,4 +1,4 @@
-const baseUrl = 'https://versionify.localtunnel.me';
+const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL;
 
 async function withResponseHandling(callback) {
   const response = await callback();

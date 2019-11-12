@@ -1,7 +1,7 @@
 'use strict';
 
 const Shopify = require('shopify-api-node');
-const { host, pathPrefix } = require('../config');
+const { host } = require('../config');
 
 function getWebhooksByCallbackUrlQuery(callbackUrl) {
   return `
@@ -51,7 +51,7 @@ async function webhookExists(shopify, callbackUrl) {
 }
 
 module.exports.handler = async (event, context) => {
-  console.log('Event:', event);
+  console.log('Event', event);
 
   const shopify = new Shopify({
     shopName: event.shop,
@@ -60,23 +60,28 @@ module.exports.handler = async (event, context) => {
 
   const promises = [];
 
-  const productCreateCallbackUrl = `${host}/${pathPrefix}/webhooks/product/create`;
+  const productCreateCallbackUrl = `${host}/webhooks/product/create`;
   if (!await webhookExists(shopify, productCreateCallbackUrl)) {
+    console.log(`Creating webhook on ${event.shop} for ${productCreateCallbackUrl}...`);
     promises.push(createWebhook(shopify, 'PRODUCTS_CREATE', productCreateCallbackUrl));
   }
 
-  const updateCreateCallbackUrl = `${host}/${pathPrefix}/webhooks/product/update`;
+  const updateCreateCallbackUrl = `${host}/webhooks/product/update`;
   if (!await webhookExists(shopify, updateCreateCallbackUrl)) {
+    console.log(`Creating webhook on ${event.shop} for ${updateCreateCallbackUrl}...`);
     promises.push(createWebhook(shopify, 'PRODUCTS_UPDATE', updateCreateCallbackUrl));
   }
 
   const creationResults = await Promise.all(promises);
+  console.log(creationResults);
   const errors = creationResults
     .map(result => result.webhookSubscriptionCreate.userErrors)
     .reduce((a, b) => a.concat(b), [])
     .filter(Boolean);
 
   if (errors.length > 0) {
-    throw `Error while creating webhooks: ${JSON.stringify(errors)}`;
+    const errorMessage = `Error while creating webhooks: ${JSON.stringify(errors)}`;
+    console.error(errorMessage);
+    throw new Error(errorMessage);
   }
 };

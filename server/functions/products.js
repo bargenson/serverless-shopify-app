@@ -11,6 +11,7 @@ function getProductsQuery() {
           node {
             id
             title
+            updatedAt
             images(first: 1) {
               edges {
                 node {
@@ -26,7 +27,7 @@ function getProductsQuery() {
 }
 
 module.exports.handler = async (event, context) => {
-  console.log(event);
+  console.log('Event', event);
 
   return withAuthentication(event, async ({ shop, accessToken }) => {
     const shopify = new Shopify({
@@ -45,19 +46,14 @@ module.exports.handler = async (event, context) => {
         body: JSON.stringify(products),
       };
     } catch (err) {
-      if (err.statusCode === 401) {
-        return {
-          statusCode: err.statusCode,
-          body: JSON.stringify({
-            message: err.statusMessage,
-          }),
-        };
-      } else {
-        return {
-          statusCode: 500,
-          body: JSON.stringify(err),
-        };
-      }
+      const errorMessage = `Error while getting products from Shopify: ${err.statusMessage}`;
+      console.error(errorMessage);
+      return {
+        statusCode: err.statusCode === 401 ? err.statusCode : 500,
+        body: JSON.stringify({
+          message: errorMessage,
+        }),
+      };
     }
   });
 };

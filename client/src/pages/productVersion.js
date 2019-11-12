@@ -17,7 +17,7 @@ function ProductVersion() {
       try {
         setProductVersion(await getProductVersion(productId, productVersionDate));
       } catch (err) {
-        setError(err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }

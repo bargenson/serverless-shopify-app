@@ -2,12 +2,12 @@
 
 const querystring = require('querystring');
 const nonce = require('nonce');
-const { host, pathPrefix, shopify } = require('../config');
+const { host, shopify } = require('../config');
 
 const createNonce = nonce();
 
 module.exports.handler = async (event, context) => {
-  console.log('Event:', event);
+  console.log('Event', event);
 
   const { myShopifyDomain, scopes, apiKey, accessMode } = shopify;
   const { shop } = event.queryStringParameters || {};
@@ -32,7 +32,7 @@ module.exports.handler = async (event, context) => {
     state: requestNonce,
     scope: scopes.join(', '),
     client_id: apiKey,
-    redirect_uri: `${host}${pathPrefix}/auth/callback`,
+    redirect_uri: `${host}/auth/callback`,
   };
 
   if (accessMode === 'online') {

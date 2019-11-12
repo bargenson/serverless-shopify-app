@@ -7,7 +7,7 @@ const { withAuthentication } = require('./utils');
 const documentClient = new AWS.DynamoDB.DocumentClient(aws.dynamodb);
 
 module.exports.handler = async (event, context) => {
-  console.log(event);
+  console.log('Event', event);
 
   const httpTriggered = !!event.httpMethod;
   const { productId, productVersionDate } = httpTriggered ? event.pathParameters : event;

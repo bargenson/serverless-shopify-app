@@ -3,9 +3,8 @@
 const AWS = require('aws-sdk');
 const Shopify = require('shopify-api-node');
 const { aws } = require('../config');
-const { withAuthentication } = require('./utils');
+const { withAuthentication, invokeLambda } = require('./utils');
 
-const lambda = new AWS.Lambda(aws.lambda);
 const documentClient = new AWS.DynamoDB.DocumentClient(aws.dynamodb);
 
 function getProductUpdateMutation() {
@@ -42,16 +41,16 @@ function convertProductToGraphqlProductInput(product) {
 }
 
 async function getProductVersion(productId, productVersionDate) {
-  const result = await lambda.invoke({
-    FunctionName: 'product-version',
-    InvocationType: 'RequestResponse',
-    Payload: JSON.stringify({ productId, productVersionDate }),
-  }).promise();
+  const result = await invokeLambda({
+    functionName: 'product-version',
+    invocationType: 'RequestResponse',
+    payload: JSON.stringify({ productId, productVersionDate }),
+  });
   return JSON.parse(result.Payload);
 }
 
 module.exports.handler = async (event, context) => {
-  console.log(event);
+  console.log('Event', event);
 
   const { productId, productVersionDate } = event.pathParameters;
 
