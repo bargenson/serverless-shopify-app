@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "nonce": "^1.0.4",
     "safe-compare": "^1.1.4",
     "serverless-dynamodb-local": "^0.2.38",
